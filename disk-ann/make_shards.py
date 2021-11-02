@@ -14,6 +14,8 @@ N_CLOSEST_CENTERS = 2
 
 PATH_TO_DATA = '../sift/'
 
+logfile = open('make_shards_out.txt', 'w')
+
 args = [int(arg) for arg in sys.argv[1:]]
 if len(args) == 1:
     N_SHARDS = args[0]
@@ -22,6 +24,9 @@ elif len(args) == 2:
 elif len(args) == 4:
     N_SHARDS, N_CLOSEST_CENTERS, N_DIM, CHUNK_SIZE = args
 
+def print_and_log(msg):
+    print(msg)
+    logfile.write(msg + '\n')    
 
 def fvecs_read(filename, c_contiguous=True, record_count=-1, line_offset=0, record_dtype=np.float32):
     if record_count > 0:
@@ -48,14 +53,14 @@ def main():
     train_data = fvecs_read(PATH_TO_DATA + 'sift_base.fvecs', record_count=CHUNK_SIZE)
     num_base_vecs = int(os.stat(PATH_TO_DATA + 'sift_base.fvecs').st_size / (N_DIM + 1) / DATA_SIZE)
 
-    print('{} base vectors'.format(num_base_vecs))
+    print_and_log('{} base vectors'.format(num_base_vecs))
 
     kmeans = KMeans(n_clusters=N_SHARDS).fit(train_data)
 
     centroids = kmeans.cluster_centers_
 
-    print('KMeans Centroids:')
-    print(centroids)
+    print_and_log('KMeans Centroids:')
+    print_and_log(np.array2string(centroids))
 
     centroid_lookup = defaultdict(list)
 
@@ -75,17 +80,17 @@ def main():
         os.remove(f)    
 
     for i, c in enumerate(centroid_lookup):
-        print('Writing shard ' + str(i))
+        print_and_log('Writing shard ' + str(i))
         shard_start = time.time()
         vector_shard = np.array(centroid_lookup[c])
         vector_shard = vector_shard.astype(np.int32)
         zero_col = np.full((len(vector_shard), 1), N_DIM, dtype=np.int32)
         vector_shard = np.c_[zero_col, vector_shard]
-        print('Shard shape: {}'.format(vector_shard.shape))
+        print_and_log('Shard shape: {}'.format(vector_shard.shape))
         vector_shard.tofile(PATH_TO_DATA + 'shards/sift_shard' + str(c + 1) + '.fvecs')
-        print('Shard write time:', time.time() - shard_start)
+        print_and_log('Shard write time: ' + str(time.time() - shard_start))
     
-    print('Total Time Taken:', time.time() - start_time)
+    print_and_log('Total Time Taken: ' + str(time.time() - start_time))
 
 if __name__ == '__main__':
     main()
