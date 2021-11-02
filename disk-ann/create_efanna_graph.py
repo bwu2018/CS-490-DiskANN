@@ -7,28 +7,19 @@ N_SHARDS = 3
 PATH_TO_SHARDS = '../sift/shards/'
 PATH_TO_EFANNA = '../efanna-imp/'
 
-K = 50
-L = 70
+K = 200
+L = 200
 ITERATIONS = 10
 S = 10
-R = 10
+R = 100
 
 args = sys.argv[1:]
 if len(args) == 1:
     N_SHARDS = args[0]
 elif len(args) == 5:
-    K = args[0]
-    L = args[1]
-    ITERATIONS = args[2]
-    S = args[3]
-    R = args[4]
-elif len(args) == 6:
-    N_SHARDS = args[0]
-    K = args[1]
-    L = args[2]
-    ITERATIONS = args[3]
-    S = args[4]
-    R = args[5]
+    K, L, ITERATIONS, S, R = args
+elif len(args) == 6:    
+    N_SHARDS, K, L, ITERATIONS, S, R = args
 
 def run_command(command_args):
     command = ' '.join([str(cmd) for cmd in command_args])
