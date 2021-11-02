@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.cluster import KMeans
 import os
 import sys
+import glob
 from collections import defaultdict
 import time
 
@@ -13,7 +14,7 @@ N_CLOSEST_CENTERS = 2
 
 PATH_TO_DATA = '../sift/'
 
-args = sys.argv[1:]
+args = [int(arg) for arg in sys.argv[1:]]
 if len(args) == 1:
     N_SHARDS = args[0]
 elif len(args) == 2:
@@ -47,12 +48,13 @@ def main():
     train_data = fvecs_read(PATH_TO_DATA + 'sift_base.fvecs', record_count=CHUNK_SIZE)
     num_base_vecs = int(os.stat(PATH_TO_DATA + 'sift_base.fvecs').st_size / (N_DIM + 1) / DATA_SIZE)
 
-    print(num_base_vecs)
+    print('{} base vectors'.format(num_base_vecs))
 
     kmeans = KMeans(n_clusters=N_SHARDS).fit(train_data)
 
     centroids = kmeans.cluster_centers_
 
+    print('KMeans Centroids:')
     print(centroids)
 
     centroid_lookup = defaultdict(list)
@@ -72,16 +74,18 @@ def main():
     for f in files:
         os.remove(f)    
 
-    for c in centroid_lookup:
+    for i, c in enumerate(centroid_lookup):
+        print('Writing shard ' + str(i))
+        shard_start = time.time()
         vector_shard = np.array(centroid_lookup[c])
         vector_shard = vector_shard.astype(np.int32)
         zero_col = np.full((len(vector_shard), 1), N_DIM, dtype=np.int32)
         vector_shard = np.c_[zero_col, vector_shard]
-        print(vector_shard.shape)
-        print(vector_shard)
+        print('Shard shape: {}'.format(vector_shard.shape))
         vector_shard.tofile(PATH_TO_DATA + 'shards/sift_shard' + str(c + 1) + '.fvecs')
+        print('Shard write time:', time.time() - shard_start)
     
-    print('Time Taken:', time.time() - start_time)
+    print('Total Time Taken:', time.time() - start_time)
 
 if __name__ == '__main__':
     main()

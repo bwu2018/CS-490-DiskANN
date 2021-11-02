@@ -14,7 +14,7 @@ ITERATIONS = 10
 S = 10
 R = 100
 
-args = sys.argv[1:]
+args = [int(arg) for arg in sys.argv[1:]]
 if len(args) == 1:
     N_SHARDS = args[0]
 elif len(args) == 5:
