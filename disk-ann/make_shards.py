@@ -12,15 +12,16 @@ N_CLOSEST_CENTERS = 2
 
 PATH_TO_DATA = '../sift/'
 
-def fvecs_read(filename, c_contiguous=True, record_count=-1, line_offset=0):
+def fvecs_read(filename, c_contiguous=True, record_count=-1, line_offset=0, record_dtype=np.float32):
     if record_count > 0:
         record_count *= N_DIM + 1
     if line_offset > 0:
         line_offset *= (N_DIM + 1) * DATA_SIZE
-    fv = np.fromfile(filename, dtype=np.float32, count=record_count, offset=line_offset)
+    fv = np.fromfile(filename, dtype=record_dtype, count=record_count, offset=line_offset)
     if fv.size == 0:
         return np.zeros((0, 0))
     dim = fv.view(np.int32)[0]
+    #print(dim)
     assert dim > 0
     fv = fv.reshape(-1, 1 + dim)
     if not all(fv.view(np.int32)[:, 0] == dim):
@@ -30,36 +31,39 @@ def fvecs_read(filename, c_contiguous=True, record_count=-1, line_offset=0):
         fv = fv.copy()
     return fv
 
-#train_data  = fvecs_read('../sift/sift_learn.fvecs')
+def main():
+    #train_data  = fvecs_read('../sift/sift_learn.fvecs')
+    
+    train_data = fvecs_read(PATH_TO_DATA + 'sift_base.fvecs', record_count=CHUNK_SIZE)
+    num_base_vecs = int(os.stat(PATH_TO_DATA + 'sift_base.fvecs').st_size / (N_DIM + 1) / DATA_SIZE)
 
-train_data = fvecs_read(PATH_TO_DATA + 'sift_base.fvecs', record_count=CHUNK_SIZE)
-num_base_vecs = int(os.stat(PATH_TO_DATA + 'sift_base.fvecs').st_size / (N_DIM + 1) / DATA_SIZE)
+    print(num_base_vecs)
 
-print(num_base_vecs)
+    kmeans = KMeans(n_clusters=N_CLUSTERS).fit(train_data)
 
-kmeans = KMeans(n_clusters=N_CLUSTERS).fit(train_data)
+    centroids = kmeans.cluster_centers_
 
-centroids = kmeans.cluster_centers_
+    print(centroids)
 
-print(centroids)
+    centroid_lookup = defaultdict(list)
 
-centroid_lookup = defaultdict(list)
+    for i in range(num_base_vecs // CHUNK_SIZE):
+        vectors = fvecs_read(PATH_TO_DATA + 'sift_base.fvecs', record_count=CHUNK_SIZE, line_offset=CHUNK_SIZE * i)
+        for vec in vectors:
+            distances = np.linalg.norm(centroids - vec, axis=1)
+            closest_centers = distances.argsort()[:N_CLOSEST_CENTERS]
+            for c in closest_centers:
+                #vec = np.insert(vec, 0, 1.8e-43, axis=0)
+                centroid_lookup[c].append(vec)
 
-for i in range(num_base_vecs // CHUNK_SIZE):
-    vectors = fvecs_read(PATH_TO_DATA + 'sift_base.fvecs', record_count=CHUNK_SIZE, line_offset=CHUNK_SIZE * i)
-    for vec in vectors:
-        distances = np.linalg.norm(centroids - vec, axis=1)
-        closest_centers = distances.argsort()[:N_CLOSEST_CENTERS]
-        for c in closest_centers:
-            #vec = np.insert(vec, 0, 1.8e-43, axis=0)
-            centroid_lookup[c].append(vec)
+    for c in centroid_lookup:
+        vector_shard = np.array(centroid_lookup[c])
+        vector_shard = vector_shard.astype(np.int32)
+        zero_col = np.full((len(vector_shard), 1), N_DIM, dtype=np.int32)
+        vector_shard = np.c_[zero_col, vector_shard]
+        print(vector_shard.shape)
+        print(vector_shard)
+        vector_shard.tofile(PATH_TO_DATA + 'shards/sift_shard' + str(c + 1) + '.fvecs')
 
-for c in centroid_lookup:
-    vector_shard = np.array(centroid_lookup[c])
-    vector_shard = vector_shard.astype(np.float32)
-    zero_col = np.full((len(vector_shard), 1), N_DIM, dtype=np.int32)
-    vector_shard = np.c_[zero_col, vector_shard]
-    print(vector_shard.shape)
-    print(vector_shard)
-    vector_shard.tofile(PATH_TO_DATA + 'shards/sift_shard' + str(c + 1) + '.fvecs')
-
+if __name__ == '__main__':
+    main()
