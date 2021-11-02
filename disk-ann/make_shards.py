@@ -3,14 +3,24 @@ from sklearn.cluster import KMeans
 import os
 import sys
 from collections import defaultdict
+import time
 
-N_CLUSTERS = 3
+N_SHARDS = 3
 CHUNK_SIZE = 1000
 N_DIM = 128
 DATA_SIZE = 4
 N_CLOSEST_CENTERS = 2
 
 PATH_TO_DATA = '../sift/'
+
+args = sys.argv[1:]
+if len(args) == 1:
+    N_SHARDS = args[0]
+elif len(args) == 2:
+    N_SHARDS, N_CLOSEST_CENTERS = args
+elif len(args) == 4:
+    N_SHARDS, N_CLOSEST_CENTERS, N_DIM, CHUNK_SIZE = args
+
 
 def fvecs_read(filename, c_contiguous=True, record_count=-1, line_offset=0, record_dtype=np.float32):
     if record_count > 0:
@@ -32,14 +42,14 @@ def fvecs_read(filename, c_contiguous=True, record_count=-1, line_offset=0, reco
     return fv
 
 def main():
-    #train_data  = fvecs_read('../sift/sift_learn.fvecs')
+    start_time = time.time()
     
     train_data = fvecs_read(PATH_TO_DATA + 'sift_base.fvecs', record_count=CHUNK_SIZE)
     num_base_vecs = int(os.stat(PATH_TO_DATA + 'sift_base.fvecs').st_size / (N_DIM + 1) / DATA_SIZE)
 
     print(num_base_vecs)
 
-    kmeans = KMeans(n_clusters=N_CLUSTERS).fit(train_data)
+    kmeans = KMeans(n_clusters=N_SHARDS).fit(train_data)
 
     centroids = kmeans.cluster_centers_
 
@@ -56,6 +66,12 @@ def main():
                 #vec = np.insert(vec, 0, 1.8e-43, axis=0)
                 centroid_lookup[c].append(vec)
 
+    # delete existing shards
+    
+    files = glob.glob(PATH_TO_DATA + 'shards/*.fvecs')
+    for f in files:
+        os.remove(f)    
+
     for c in centroid_lookup:
         vector_shard = np.array(centroid_lookup[c])
         vector_shard = vector_shard.astype(np.int32)
@@ -64,6 +80,8 @@ def main():
         print(vector_shard.shape)
         print(vector_shard)
         vector_shard.tofile(PATH_TO_DATA + 'shards/sift_shard' + str(c + 1) + '.fvecs')
+    
+    print('Time Taken:', time.time() - start_time)
 
 if __name__ == '__main__':
     main()

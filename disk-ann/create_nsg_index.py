@@ -6,21 +6,19 @@ import time
 
 N_SHARDS = 3
 PATH_TO_SHARDS = '../sift/shards/'
-PATH_TO_EFANNA = '../efanna-imp/'
+PATH_TO_NSG = '../nsg-imp/'
 
-K = 200
-L = 200
-ITERATIONS = 10
-S = 10
-R = 100
+L = 40
+R = 50
+C = 500
 
 args = sys.argv[1:]
 if len(args) == 1:
     N_SHARDS = args[0]
 elif len(args) == 5:
-    K, L, ITERATIONS, S, R = args
-elif len(args) == 6:    
-    N_SHARDS, K, L, ITERATIONS, S, R = args
+    L, R, C = args
+elif len(args) == 6:
+    N_SHARDS, L, R, C = args
 
 def run_command(command_args):
     command = ' '.join([str(cmd) for cmd in command_args])
@@ -29,27 +27,28 @@ def run_command(command_args):
 
 def main():
     start_time = time.time()
-    # delete existing graphs    
-    files = glob.glob(PATH_TO_SHARDS + 'graphs/*')
+
+    # delete existing indexes    
+    files = glob.glob(PATH_TO_SHARDS + 'nsg_indexes/*')
     for f in files:
         os.remove(f)
 
-    os.chdir(PATH_TO_EFANNA)
+    os.chdir(PATH_TO_NSG)
 
     for shard_num in range(1, N_SHARDS + 1):
         print('shard:', shard_num)
         shard_args = []
-        shard_args.append('./tests/test_nndescent')
+        shard_args.append('./build/tests/test_nsg_index')
         shard_args.append(PATH_TO_SHARDS + 'sift_shard' + str(shard_num) + '.fvecs')
         shard_args.append(PATH_TO_SHARDS + 'graphs/sift_shard' + str(shard_num) + '.graph')
-        shard_args.append(K)
         shard_args.append(L)
-        shard_args.append(ITERATIONS)
-        shard_args.append(S)
         shard_args.append(R)
+        shard_args.append(C)
+        shard_args.append(PATH_TO_SHARDS + 'nsg_indexes/sift_shard' + str(shard_num) + '.nsg')
         run_command(shard_args)
     
-    print("Total time taken:" , time.time() - start_time)
+    print('Total time taken:', time.time() - start_time)
+
 
 if __name__ == '__main__':
     main()
