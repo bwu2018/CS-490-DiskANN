@@ -1,4 +1,4 @@
-S-490-DiskANN
+# CS-490-DiskANN
 
 ## Setup
 
