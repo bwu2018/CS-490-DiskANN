@@ -6,7 +6,7 @@ import glob
 from collections import defaultdict
 import time
 
-N_SHARDS = 3
+N_SHARDS = 40
 CHUNK_SIZE = 1000
 N_DIM = 128
 DATA_SIZE = 4

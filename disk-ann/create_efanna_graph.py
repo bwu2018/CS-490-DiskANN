@@ -5,7 +5,7 @@ import glob
 import time
 import subprocess
 
-N_SHARDS = 3
+N_SHARDS = 40
 PATH_TO_SHARDS = '../sift/shards/'
 PATH_TO_EFANNA = '../efanna-imp/'
 
