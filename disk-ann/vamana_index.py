@@ -1,7 +1,21 @@
 import numpy as np
-from collections import defaultdict
 import random
+import re
+import json
 
+def fvecs_read(filename, c_contiguous=True):
+    fv = np.fromfile(filename, dtype=np.float32)
+    if fv.size == 0:
+        return np.zeros((0, 0))
+    dim = fv.view(np.int32)[0]
+    assert dim > 0
+    fv = fv.reshape(-1, 1 + dim)
+    if not all(fv.view(np.int32)[:, 0] == dim):
+        raise IOError("Non-uniform vector sizes in " + filename)
+    fv = fv[:, 1:]
+    if c_contiguous:
+        fv = fv.copy()
+    return fv
 
 def n_closest_points(P: np.array, query: np.array, query_set: set, n: int) -> list:
     query_list = list(query_set)
@@ -11,7 +25,7 @@ def n_closest_points(P: np.array, query: np.array, query_set: set, n: int) -> li
     return [query_list[x] for x in distance_index]
 
 # Graph G
-def greedy_search(P: np.array, G: defaultdict, start_node: int, query: np.array, result_size: int, search_list_size: int) -> list:
+def greedy_search(P: np.array, G: dict, start_node: int, query: np.array, result_size: int, search_list_size: int) -> list:
     result = set()
     result.add(start_node)
     visited = set()
@@ -51,26 +65,19 @@ def robust_prune(P, G, p, V, alpha, R):
             V.remove(point)
     return G
 
-def vamana(shard_filename, alpha, L, R):
+def vamana(P, G, alpha, L, R):
     # P is list of points in shard
-    P = [
-        [1,1],
-        [2,2],
-        [100,100],
-        [200,200],
-        [300,300],
-        [400,400],
-        [500,500]
-    ]
-    P = np.asarray([np.asarray(x) for x in P])
-    print(P)
-
-    G = defaultdict(list)
-    index_list = [x for x in range(len(P))]
-    for i in index_list:
-        G[i] = random.sample(index_list[:i] + index_list[i+1:], R)
-
-    print("Random Graph:", G)
+    # P = [
+    #     [1,1],
+    #     [2,2],
+    #     [100,100],
+    #     [200,200],
+    #     [300,300],
+    #     [400,400],
+    #     [500,500]
+    # ]
+    # P = np.asarray([np.asarray(x) for x in P])
+    # print(P)
 
     # TODO: Find actual mediod
     mediod = len(P) // 2 # Index of mediod
@@ -95,13 +102,33 @@ def vamana(shard_filename, alpha, L, R):
                 G = robust_prune(P, G, point, temp_set, alpha, R)
             else:
                 G[point] = list(temp_set)
-    
-    # Save graph G
-    print(G)
+    return G
 
 def main():
     random.seed(10)
-    vamana("temp", 1, 8, 2)
+    alpha = 2
+    L = 8
+    R = 2
+
+    files = glob.glob("../shards/*.fvecs")
+    for shard_filename in files:
+        P = fvecs_read(shard_filename)
+
+        G = dict()
+        index_list = [x for x in range(len(P))]
+        for i in index_list:
+            G[i] = random.sample(index_list[:i] + index_list[i+1:], R)
+
+        print("Random Graph:", G)
+        
+        G = vamana(P, G, 1, L, R)
+        G = vamana(P, G, alpha, L, R)
+        # Save graph G
+        file_num = int(re.findall(r'\d+', shard_filename)[0])
+        json = json.dumps(G)
+        f = open(f"../shards/vamana_indexes/vamana_index{file_num}.json", "w")
+        f.write(json)
+        f.close()
 
 
 if __name__ == '__main__':
