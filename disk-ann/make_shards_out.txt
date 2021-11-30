@@ -1,0 +1,136 @@
+1000000 base vectors
+KMeans Centroids:
+[[ 2.2928570e+01  5.0714312e+00  7.0714273e+00 ...  6.6071396e+00
+   2.0714245e+00  4.2857141e+00]
+ [ 1.1527783e+01  2.1361115e+01  1.2083332e+01 ...  3.0388895e+01
+   1.9944447e+01  9.0277786e+00]
+ [ 3.0129030e+01  2.5161293e+01  1.3129031e+01 ...  3.1774197e+01
+   3.1935480e+01  3.9354836e+01]
+ ...
+ [ 2.3090908e+01  7.2727394e-01 -9.5367432e-07 ...  2.9090881e+00
+   2.8181820e+00  7.1818190e+00]
+ [ 1.9391300e+01  1.1391306e+01  5.8695650e+00 ...  1.6173912e+01
+   7.5217400e+00  5.4782591e+00]
+ [ 3.8333332e+01  9.3333349e+00  1.7999983e+00 ...  9.9333305e+00
+   2.1066668e+01  5.2133339e+01]]
+Writing shard 0
+Shard shape: (50999, 129)
+Shard write time: 0.11635684967041016
+Writing shard 1
+Shard shape: (108894, 129)
+Shard write time: 0.4005241394042969
+Writing shard 2
+Shard shape: (10604, 129)
+Shard write time: 0.04605531692504883
+Writing shard 3
+Shard shape: (49201, 129)
+Shard write time: 0.14261531829833984
+Writing shard 4
+Shard shape: (41565, 129)
+Shard write time: 0.12752270698547363
+Writing shard 5
+Shard shape: (35649, 129)
+Shard write time: 0.08941531181335449
+Writing shard 6
+Shard shape: (98868, 129)
+Shard write time: 0.28992271423339844
+Writing shard 7
+Shard shape: (80863, 129)
+Shard write time: 0.21765661239624023
+Writing shard 8
+Shard shape: (42273, 129)
+Shard write time: 0.13649415969848633
+Writing shard 9
+Shard shape: (48445, 129)
+Shard write time: 0.14478468894958496
+Writing shard 10
+Shard shape: (35487, 129)
+Shard write time: 0.10706663131713867
+Writing shard 11
+Shard shape: (47133, 129)
+Shard write time: 0.1271800994873047
+Writing shard 12
+Shard shape: (33284, 129)
+Shard write time: 0.0930020809173584
+Writing shard 13
+Shard shape: (48629, 129)
+Shard write time: 0.1461029052734375
+Writing shard 14
+Shard shape: (31338, 129)
+Shard write time: 0.09637975692749023
+Writing shard 15
+Shard shape: (50249, 129)
+Shard write time: 0.12711143493652344
+Writing shard 16
+Shard shape: (105557, 129)
+Shard write time: 0.2742323875427246
+Writing shard 17
+Shard shape: (57357, 129)
+Shard write time: 0.18152856826782227
+Writing shard 18
+Shard shape: (63524, 129)
+Shard write time: 0.18400311470031738
+Writing shard 19
+Shard shape: (43570, 129)
+Shard write time: 0.11607694625854492
+Writing shard 20
+Shard shape: (50710, 129)
+Shard write time: 0.13846945762634277
+Writing shard 21
+Shard shape: (74055, 129)
+Shard write time: 0.2069246768951416
+Writing shard 22
+Shard shape: (47957, 129)
+Shard write time: 0.17026257514953613
+Writing shard 23
+Shard shape: (71171, 129)
+Shard write time: 0.16855955123901367
+Writing shard 24
+Shard shape: (39359, 129)
+Shard write time: 0.11548042297363281
+Writing shard 25
+Shard shape: (53067, 129)
+Shard write time: 0.15702199935913086
+Writing shard 26
+Shard shape: (38578, 129)
+Shard write time: 0.11468696594238281
+Writing shard 27
+Shard shape: (33917, 129)
+Shard write time: 0.10637164115905762
+Writing shard 28
+Shard shape: (47424, 129)
+Shard write time: 0.1367645263671875
+Writing shard 29
+Shard shape: (61965, 129)
+Shard write time: 0.17685723304748535
+Writing shard 30
+Shard shape: (55228, 129)
+Shard write time: 0.176300048828125
+Writing shard 31
+Shard shape: (44213, 129)
+Shard write time: 0.10679149627685547
+Writing shard 32
+Shard shape: (16475, 129)
+Shard write time: 0.07209944725036621
+Writing shard 33
+Shard shape: (46230, 129)
+Shard write time: 0.14650487899780273
+Writing shard 34
+Shard shape: (50044, 129)
+Shard write time: 0.1480417251586914
+Writing shard 35
+Shard shape: (46478, 129)
+Shard write time: 0.12923789024353027
+Writing shard 36
+Shard shape: (49754, 129)
+Shard write time: 0.1300678253173828
+Writing shard 37
+Shard shape: (43342, 129)
+Shard write time: 0.11641931533813477
+Writing shard 38
+Shard shape: (17746, 129)
+Shard write time: 0.07048869132995605
+Writing shard 39
+Shard shape: (28798, 129)
+Shard write time: 0.08973407745361328
+Total Time Taken: 25.51117181777954
