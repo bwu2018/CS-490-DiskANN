@@ -5,6 +5,7 @@ import sys
 import glob
 from collections import defaultdict
 import time
+import json
 
 N_SHARDS = 40
 CHUNK_SIZE = 1000
@@ -49,15 +50,18 @@ def fvecs_read(filename, c_contiguous=True, record_count=-1, line_offset=0, reco
 
 def main():
     start_time = time.time()
-    
+    # TODO: Train data should be a random sample
     train_data = fvecs_read(PATH_TO_DATA + 'sift_base.fvecs', record_count=CHUNK_SIZE)
     num_base_vecs = int(os.stat(PATH_TO_DATA + 'sift_base.fvecs').st_size / (N_DIM + 1) / DATA_SIZE)
 
     print_and_log('{} base vectors'.format(num_base_vecs))
 
-    kmeans = KMeans(n_clusters=N_SHARDS).fit(train_data)
+    kmeans = KMeans(n_clusters=N_SHARDS, random_state = 10).fit(train_data)
 
     centroids = kmeans.cluster_centers_
+
+    # Save centroids
+    np.savetxt(PATH_TO_DATA + "shards/centroids.txt", centroids, delimiter=",")
 
     print_and_log('KMeans Centroids:')
     print_and_log(np.array2string(centroids))
@@ -77,7 +81,25 @@ def main():
     
     files = glob.glob(PATH_TO_DATA + 'shards/*.fvecs')
     for f in files:
-        os.remove(f)    
+        os.remove(f)
+
+    medoids_raw = dict()
+    medoids_index = dict()
+    for i, c in enumerate(centroid_lookup):
+        centroid = centroids[c]
+        distances = np.linalg.norm(np.asarray(centroid_lookup[c]) - centroid, axis = 1)
+        # TODO: If centroid_lookup[c] is written directly to disk, medoid index should match correctly
+        medoids_raw[int(c)] = centroid_lookup[c][int(distances.argsort()[:1])]
+        medoids_index[int(c)] = int(distances.argsort()[:1])
+    
+    print("Raw Medoids:")
+    print(medoids_raw)
+
+    to_write = json.dumps(medoids_index)
+    f = open(PATH_TO_DATA + "shards/medoids_index.json", "w")
+    f.write(to_write)
+    f.close()
+    
 
     for i, c in enumerate(centroid_lookup):
         print_and_log('Writing shard ' + str(i))
