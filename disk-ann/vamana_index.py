@@ -2,12 +2,19 @@ import numpy as np
 import random
 import re
 import json
+import glob
+import time
 
-def fvecs_read(filename, c_contiguous=True):
-    fv = np.fromfile(filename, dtype=np.float32)
+def fvecs_read(filename, c_contiguous=True, record_count=-1, line_offset=0, record_dtype=np.int32):
+    if record_count > 0:
+        record_count *= N_DIM + 1
+    if line_offset > 0:
+        line_offset *= (N_DIM + 1) * DATA_SIZE
+    fv = np.fromfile(filename, dtype=record_dtype, count=record_count, offset=line_offset)
     if fv.size == 0:
         return np.zeros((0, 0))
     dim = fv.view(np.int32)[0]
+    #print(dim)
     assert dim > 0
     fv = fv.reshape(-1, 1 + dim)
     if not all(fv.view(np.int32)[:, 0] == dim):
@@ -65,7 +72,7 @@ def robust_prune(P, G, p, V, alpha, R):
             V.remove(point)
     return G
 
-def vamana(P, G, alpha, L, R):
+def vamana_helper(P, G, alpha, L, R, medoid):
     # P is list of points in shard
     # P = [
     #     [1,1],
@@ -79,22 +86,19 @@ def vamana(P, G, alpha, L, R):
     # P = np.asarray([np.asarray(x) for x in P])
     # print(P)
 
-    # TODO: Find actual mediod
-    mediod = len(P) // 2 # Index of mediod
-    print("Mediod:", mediod)
     sigma = [x for x in range(len(P))]
     random.shuffle(sigma)
 
-    # print([P[x] for x in greedy_search(P, G, mediod, np.asarray([500,400]), 3, L)])
+    # print([P[x] for x in greedy_search(P, G, medoid, np.asarray([500,400]), 3, L)])
     # exit()
 
     for i in sigma:
-        print("i:", i)
-        V = set(greedy_search(P, G, mediod, P[i], 1, L))
-        print(V)
-        print(G)
+        # print("i:", i)
+        V = set(greedy_search(P, G, medoid, P[i], 1, L))
+        # print(V)
+        # print(G)
         G = robust_prune(P, G, i, V, alpha, R)
-        print(G)
+        # print(G)
         for point in G[i]:
             temp_set = set(G[point])
             temp_set.add(i)
@@ -104,32 +108,46 @@ def vamana(P, G, alpha, L, R):
                 G[point] = list(temp_set)
     return G
 
+def vamana(shard_filename, alpha, L, R):
+    P = fvecs_read(shard_filename)
+
+    # Create random R-regular graph
+    G = dict()
+    index_list = [x for x in range(len(P))]
+    for i in index_list:
+        G[i] = random.sample(index_list[:i] + index_list[i+1:], R)
+
+    # print("Random Graph:", G)
+    
+    file_num = int(re.findall(r'\d+', shard_filename)[0])
+
+    with open("../sift/shards/medoids_index.json") as f:
+        medoids_index = json.load(f)
+    medoid = medoids_index[str(file_num - 1)]
+
+    G = vamana_helper(P, G, 1, L, R, medoid)
+    G = vamana_helper(P, G, alpha, L, R, medoid)
+
+    # Save graph G
+    to_write = json.dumps(G)
+    f = open(f"../sift/shards/vamana_indexes/vamana_index{file_num}.json", "w")
+    f.write(to_write)
+    f.close()
+
 def main():
     random.seed(10)
     alpha = 2
-    L = 8
-    R = 2
+    L = 75
+    R = 60
 
-    files = glob.glob("../shards/*.fvecs")
+    files = glob.glob("../sift/shards/*.fvecs")
+    start_time = time.time()
     for shard_filename in files:
-        P = fvecs_read(shard_filename)
-
-        G = dict()
-        index_list = [x for x in range(len(P))]
-        for i in index_list:
-            G[i] = random.sample(index_list[:i] + index_list[i+1:], R)
-
-        print("Random Graph:", G)
-        
-        G = vamana(P, G, 1, L, R)
-        G = vamana(P, G, alpha, L, R)
-        # Save graph G
-        file_num = int(re.findall(r'\d+', shard_filename)[0])
-        json = json.dumps(G)
-        f = open(f"../shards/vamana_indexes/vamana_index{file_num}.json", "w")
-        f.write(json)
-        f.close()
-
+        print(shard_filename)
+        shard_start = time.time()
+        vamana(shard_filename, alpha, L, R)
+        print("Shard index time: " + str(time.time() - shard_start))
+    print("Total Time Taken: " + str(time.time() - start_time))
 
 if __name__ == '__main__':
     main()
