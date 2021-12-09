@@ -94,8 +94,8 @@ def vamana(shard_filename, alpha, L, R):
 def main():
     random.seed(10)
     alpha = 2
-    L = 75
-    R = 5
+    L = 100
+    R = 100
 
     files = glob.glob("../../siftsmall/shards/*.fvecs")
     start_time = time.time()

@@ -76,13 +76,13 @@ def main():
     with open("../../siftsmall/shards/medoids_index.pickle", "rb") as f:
         medoids_index = pickle.load(f)
     
-
+    total_time = 0
+    total_recall = 0
     for i in range(len(queries)):
         print(i)
         start_time = time.time()
         result = search(queries[i], medoids_index)
         time_spent = time.time() - start_time
-
         intersection = 0
         # Manually check to see if groundtruth in returned vectors
         for v in ground_truth[i]:
@@ -90,10 +90,13 @@ def main():
                 if np.array_equiv(result_vector, base[v]):
                     intersection += 1
                     break
+        total_time += time_spent
+        total_recall += intersection / 100
         metrics.append([time_spent, intersection / 100])
     with open("metrics_5.pickle", "wb") as f:
         pickle.dump(metrics, f, pickle.HIGHEST_PROTOCOL)
-    
+    print("Average time:", total_time / 100)
+    print("Average recall:", total_recall / 100)
 
 if __name__ == '__main__':
     main()
