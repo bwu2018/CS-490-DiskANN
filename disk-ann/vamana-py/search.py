@@ -3,22 +3,20 @@ import pickle
 import glob
 import re
 from utils import fvecs_read, greedy_search
+import time
 
 
-def main():
-    num_shards_query = 2
-
-    query = []
+def search(query, medoids_index, num_shards_query=2):
     
     # TODO: Can sort and store indexable filenames for easy access
     # Get closest centroids to query
-    centroids = np.loadtxt("../sift/shards/centroids.txt", delimiter = ",")
+    centroids = np.loadtxt("../../siftsmall/shards/centroids.txt", delimiter = ",")
     distances = np.linalg.norm(centroids - query, axis = 1)
     distance_index = distances.argsort()[:num_shards_query]
     print("Distance index:", distance_index)
 
     # Get shards from candidate centroids
-    all_shard_files = glob.glob("../sift/shards/*.fvecs")
+    all_shard_files = glob.glob("../../siftsmall/shards/*.fvecs")
     shard_file_names = []
     for index in distance_index:
         for x in all_shard_files:
@@ -27,7 +25,7 @@ def main():
     print(shard_file_names)
 
     # Get shard graphs from candidate centroids
-    all_shard_index = glob.glob("../sift/shards/vamana_indexes/*.pickle")
+    all_shard_index = glob.glob("../../siftsmall/shards/vamana_indexes/*.pickle")
     shard_graph_names = []
     for index in distance_index:
         for x in all_shard_index:
@@ -39,6 +37,7 @@ def main():
     P = fvecs_read(shard_file_names[0])
     with open(shard_graph_names[0], 'rb') as f:
         G = pickle.load(f)
+    assert(len(P) == len(G.keys()))
 
     P_merge = fvecs_read(shard_file_names[1])
     with open(shard_graph_names[1], 'rb') as f:
@@ -48,11 +47,12 @@ def main():
     shard_to_merge = dict()
     for i, x in enumerate(P_merge):
         for j, y in enumerate(P):
-            if x == y:
+            if np.array_equiv(x, y):
                 shard_to_merge[i] = j
         if i not in shard_to_merge.keys():
-            P.append(x)
-            shard_to_merge[i] = len(P)
+            P = np.vstack([P, x])
+            shard_to_merge[i] = len(P) - 1
+            G[len(P) - 1] = []
 
     # Merge shard graphs using merged index
     for key in G_merge.keys():
@@ -60,12 +60,40 @@ def main():
         true_out_nodes = [shard_to_merge[x] for x in out_nodes]
         # Cast to set -> list to remove duplicate edges
         G[shard_to_merge[key]] = list(set(G[shard_to_merge[key]] + true_out_nodes))
+    assert(len(P) == len(G))
 
     # Search merged graph
-    result_size = 5
-    search_list_size = 60
-    print(greedy_search(P, G, start_node, query, result_size, search_list_size))
+    result_size = 100
+    search_list_size = 100
+    index_results = greedy_search(P, G, medoids_index[distance_index[0]], query, result_size, search_list_size)
+    return [P[x] for x in index_results]
 
+def main():
+    ground_truth = fvecs_read("../../siftsmall/siftsmall_groundtruth.ivecs")
+    queries = fvecs_read("../../siftsmall/siftsmall_query.fvecs", record_dtype=np.float32)
+    base = fvecs_read("../../siftsmall/siftsmall_base.fvecs", record_dtype=np.float32)
+    metrics = []
+    with open("../../siftsmall/shards/medoids_index.pickle", "rb") as f:
+        medoids_index = pickle.load(f)
+    
+
+    for i in range(len(queries)):
+        print(i)
+        start_time = time.time()
+        result = search(queries[i], medoids_index)
+        time_spent = time.time() - start_time
+
+        intersection = 0
+        # Manually check to see if groundtruth in returned vectors
+        for v in ground_truth[i]:
+            for result_vector in result:
+                if np.array_equiv(result_vector, base[v]):
+                    intersection += 1
+                    break
+        metrics.append([time_spent, intersection / 100])
+    with open("metrics_5.pickle", "wb") as f:
+        pickle.dump(metrics, f, pickle.HIGHEST_PROTOCOL)
+    
 
 if __name__ == '__main__':
     main()
