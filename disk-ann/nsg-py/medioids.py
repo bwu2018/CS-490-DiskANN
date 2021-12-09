@@ -1,5 +1,6 @@
 import os
 import re
+import json
 
 import numpy as np
 
@@ -16,8 +17,11 @@ def get_medioids(path_to_shards,centroids,check_for_existing=True):
     Optional Arguments:
     check_for_existing: If medioids exist as saved .npy files, return those. Default=True
     """
-    if (check_for_existing and os.path.exists(os.path.join(path_to_shards,"../centroids/medioids.npy"))):
-        return np.load(os.path.join(path_to_shards,"../centroids/medioids.npy"))
+    if (check_for_existing):
+        first_path = os.path.join(path_to_shards,"../centroids/medioids.npy")
+        if (os.path.exists(first_path)):
+            return np.load(first_path)
+    
     fvecs = sorted(
                     [f for f in os.listdir(path_to_shards) if os.path.isfile(os.path.join(path_to_shards,f))],
                     key=lambda x: int(re.sub(r'[^\d]+','',x))

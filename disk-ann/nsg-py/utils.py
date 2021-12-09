@@ -29,7 +29,7 @@ def setup_data_dir(path):
     my_mkdr(os.path.join(path,"centroids"))
     my_mkdr(os.path.join(path,"nsg"))
 
-def fvecs_read(filename, c_contiguous=True, record_count=-1, line_offset=0, record_dtype=np.float32):
+def fvecs_read(filename, c_contiguous=True, record_count=-1, line_offset=0, record_dtype=np.int32):
     if record_count > 0:
         record_count *= N_DIM + 1
     if line_offset > 0:

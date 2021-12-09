@@ -163,7 +163,7 @@ def strongly_connect_NSG(NSG,S,G,navigating_node,l,m,use_tqdm=False):
                     break
     return NSG
 
-def query_NSG(q,NSG,S,navigating_node):
+def query_NSG(q,NSG,S,navigating_node,secondShard=[],secondNSG=None,reverse_lookup=None,traversal_limit=None):
     """
     Queries NSG graph using Greedy DFS search.
 
@@ -174,18 +174,23 @@ def query_NSG(q,NSG,S,navigating_node):
     navigating_node: Node to start dfs (root)
     """
     visited = set()
+    visited_with_dist = set()
     current_idx = navigating_node
     dfs_stack = [(S[current_idx],current_idx)]    
     
     cur_min = 1000000
     cur_min_idx = -1
     
-    while (dfs_stack and len(visited) < len(S)):
+    # traversal_limit = len(S) + len(secondShard)
+
+    while (dfs_stack):
         v,current_idx = dfs_stack.pop()
                 
         dist = get_euclid_dist(q,v)
 
         visited.add(current_idx)
+        if ((-1*current_idx,dist) not in visited_with_dist):
+            visited_with_dist.add((current_idx,dist))
 
         prev_min = cur_min
         
@@ -193,22 +198,36 @@ def query_NSG(q,NSG,S,navigating_node):
         cur_min = min([cur_min,dist])
         
         if (cur_min==0.0 or cur_min-prev_min > 0):
+            print("hit1")
             break
         
         try:
-            adj = NSG[current_idx]
+            if (current_idx < 0):
+                adj = [-1*a for a in secondNSG[-1 * current_idx]]
+                # print(adj)
+            else:
+                adj = NSG[current_idx]
         except:
+            print("hit2")
             break
 
         for n in adj:
             if (n not in visited):
-                dfs_stack.append((S[n],n))
-    return cur_min,cur_min_idx
+                if (n < 0):
+                    dfs_stack.append((secondShard[-1*n],n))
+                else:
+                    dfs_stack.append((S[n],n))
+
+    visited_with_dist = sorted(list(visited_with_dist),key=lambda x:x[1])
+
+    return visited_with_dist
 
 def save_NSG(NSG,nsgdir,nsgfilename):
+    print("Saving NSG to",os.path.join(nsgdir,nsgfilename))
     with open(os.path.join(nsgdir,nsgfilename),'wb') as fh:
         pickle.dump(NSG,fh)
 
 def load_NSG(nsgdir,nsgfilename):
+    # print("Loading NSG from",os.path.join(nsgdir,nsgfilename))
     fh = open(os.path.join(nsgdir,nsgfilename),"rb")
     return pickle.load(fh)

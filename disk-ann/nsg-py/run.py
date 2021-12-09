@@ -27,7 +27,7 @@ def build_nsg_index():
     
     path_to_shards = os.path.join(PATH_TO_DATA,"shards")
 
-    union_nng(path_to_shards,4)
+    union_nng(path_to_shards,75)
 
     centroids = calculate_centroids(path_to_shards)
     medioids = get_medioids(path_to_shards,centroids)
@@ -42,8 +42,8 @@ def build_nsg_index():
         print("Constructing NSG Index for shard:",i+1)
         shard = fvecs_read(os.path.join(path_to_shards,shard_file))
         nng = np.load(os.path.join(path_to_shards,"../nng","nng_shard_"+str(i+1)+".npy"))
-        nsg = build_NSG(shard,nng,int(medioids[i][1]),500,5)
-        nsg = strongly_connect_NSG(nsg,shard,nng,int(medioids[i][1]),500,5)
+        nsg = build_NSG(shard,nng,int(medioids[i][1]),500,60)
+        nsg = strongly_connect_NSG(nsg,shard,nng,int(medioids[i][1]),500,60)
 
         nsg_path = os.path.join(PATH_TO_DATA,"nsg")
         nsg_filename = "nsg_shard_"+str(i+1)+".nsg"
@@ -166,7 +166,7 @@ def shardTest():
     return vec_to_shard
 
 if __name__ == '__main__':
-    # main(mode=1)
+    main(mode=1)
     # main(mode=3,k=5)
     # main(mode=3)
-    print(shardTest())
+    # print(shardTest())

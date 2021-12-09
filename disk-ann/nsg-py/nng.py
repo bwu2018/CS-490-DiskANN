@@ -52,8 +52,6 @@ def union_nng(path_to_shards,k):
     nngs = []
 
     for i,shard_file in enumerate(fvecs):
-        if (i+1 <= 22):
-            continue
         print("Building nng for Shard:",i+1)
         shard = fvecs_read(os.path.join(path_to_shards,shard_file))
         nng = build_nng_shard(shard,k)
