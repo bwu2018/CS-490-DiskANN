@@ -1,6 +1,13 @@
 import numpy as np
 
 
+def n_closest_points(P, query, query_set, n):
+    query_list = list(query_set)
+    raw_query_list = np.asarray([P[x] for x in query_list])
+    distances = np.linalg.norm(raw_query_list - query, axis=1)
+    distance_index = distances.argsort()[:n]
+    return [query_list[x] for x in distance_index]
+
 def fvecs_read(filename, c_contiguous=True, record_count=-1, line_offset=0, record_dtype=np.int32):
     if record_count > 0:
         record_count *= N_DIM + 1

@@ -1,18 +1,11 @@
 import numpy as np
 import random
 import re
-import json
+import pickle
 import glob
 import time
 from utils import fvecs_read, greedy_search
 
-
-def n_closest_points(P: np.array, query: np.array, query_set: set, n: int) -> list:
-    query_list = list(query_set)
-    raw_query_list = np.asarray([P[x] for x in query_list])
-    distances = np.linalg.norm(raw_query_list - query, axis=1)
-    distance_index = distances.argsort()[:n]
-    return [query_list[x] for x in distance_index]
 
 # Graph G, Point p, candidate set V, distance threshold alpha, degree bound R
 # G is adjacency list
@@ -87,26 +80,24 @@ def vamana(shard_filename, alpha, L, R):
     
     file_num = int(re.findall(r'\d+', shard_filename)[0])
 
-    with open("../sift/shards/medoids_index.json") as f:
-        medoids_index = json.load(f)
-    medoid = medoids_index[str(file_num - 1)]
+    with open("../../siftsmall/shards/medoids_index.pickle", "rb") as f:
+        medoids_index = pickle.load(f)
+    medoid = medoids_index[file_num - 1]
 
     G = vamana_helper(P, G, 1, L, R, medoid)
     G = vamana_helper(P, G, alpha, L, R, medoid)
 
     # Save graph G
-    to_write = json.dumps(G)
-    f = open(f"../sift/shards/vamana_indexes/vamana_index{file_num}.json", "w")
-    f.write(to_write)
-    f.close()
+    with open(f"../../siftsmall/shards/vamana_indexes/vamana_index{file_num}.pickle", "wb") as f:
+        pickle.dump(G, f, protocol=pickle.HIGHEST_PROTOCOL)
 
 def main():
     random.seed(10)
     alpha = 2
     L = 75
-    R = 60
+    R = 5
 
-    files = glob.glob("../sift/shards/*.fvecs")
+    files = glob.glob("../../siftsmall/shards/*.fvecs")
     start_time = time.time()
     for shard_filename in files:
         print(shard_filename)
