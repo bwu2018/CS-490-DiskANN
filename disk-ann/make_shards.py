@@ -1,3 +1,4 @@
+from typing_extensions import Protocol
 import numpy as np
 from sklearn.cluster import KMeans
 import os
@@ -5,7 +6,7 @@ import sys
 import glob
 from collections import defaultdict
 import time
-import json
+import pickle
 
 N_SHARDS = 40
 CHUNK_SIZE = 1000
@@ -95,8 +96,8 @@ def main():
     print("Raw Medoids:")
     print(medoids_raw)
 
-    to_write = json.dumps(medoids_index)
-    f = open(PATH_TO_DATA + "shards/medoids_index.json", "w")
+    with open(PATH_TO_DATA + "shards/medoids_index.pickle", "wb") as f:
+        f.dump(medoids_index, f, pickle.HIGHEST_PROTOCOL)
     f.write(to_write)
     f.close()
     

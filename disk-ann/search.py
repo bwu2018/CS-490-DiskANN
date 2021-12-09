@@ -1,5 +1,5 @@
 import numpy as np
-import json
+import pickle
 import glob
 import re
 from utils import fvecs_read, greedy_search
@@ -27,23 +27,23 @@ def main():
     print(shard_file_names)
 
     # Get shard graphs from candidate centroids
-    all_shard_index = glob.glob("../sift/shards/vamana_indexes/*.json")
+    all_shard_index = glob.glob("../sift/shards/vamana_indexes/*.pickle")
     shard_graph_names = []
     for index in distance_index:
         for x in all_shard_index:
-            if re.search("index" + str(index + 1) + "\.json", x):
+            if re.search("index" + str(index + 1) + "\.pickle", x):
                 shard_graph_names.append(x)
     print(shard_graph_names)
 
     # TODO: Don't hard code merge of 2 shards
     P = fvecs_read(shard_file_names[0])
-    f = open(shard_graph_names[0])
-    G = json.load(f)
+    with open(shard_graph_names[0], 'rb') as f:
+        G = pickle.load(f)
     f.close()
 
     P_merge = fvecs_read(shard_file_names[1])
-    f = open(shard_graph_names[1])
-    G_merge = json.load(f)
+    with open(shard_graph_names[1], 'rb') as f:
+        G_merge = pickle.load(f)
     f.close()
 
     # Create 2nd shard index to merged index lookup

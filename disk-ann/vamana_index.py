@@ -1,7 +1,7 @@
 import numpy as np
 import random
 import re
-import json
+import pickle
 import glob
 import time
 from utils import fvecs_read, greedy_search
@@ -87,16 +87,16 @@ def vamana(shard_filename, alpha, L, R):
     
     file_num = int(re.findall(r'\d+', shard_filename)[0])
 
-    with open("../sift/shards/medoids_index.json") as f:
-        medoids_index = json.load(f)
+    with open("../sift/shards/medoids_index.pickle") as f:
+        medoids_index = pickle.load(f)
     medoid = medoids_index[str(file_num - 1)]
 
     G = vamana_helper(P, G, 1, L, R, medoid)
     G = vamana_helper(P, G, alpha, L, R, medoid)
 
     # Save graph G
-    to_write = json.dumps(G)
-    f = open(f"../sift/shards/vamana_indexes/vamana_index{file_num}.json", "w")
+    with open(f"../sift/shards/vamana_indexes/vamana_index{file_num}.pickle", "wb") as f:
+        pickle.dump(G, f, protocol=pickle.HIGHEST_PROTOCOL)
     f.write(to_write)
     f.close()
 
