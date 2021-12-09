@@ -139,3 +139,6 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# Custom
+disk-ann/make_shards_out.txt
