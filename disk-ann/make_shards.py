@@ -14,7 +14,7 @@ N_DIM = 128
 DATA_SIZE = 4
 N_CLOSEST_CENTERS = 2
 
-PATH_TO_DATA = '../sift/'
+PATH_TO_DATA = '../siftsmall/'
 
 logfile = open('make_shards_out.txt', 'w')
 
@@ -52,8 +52,8 @@ def fvecs_read(filename, c_contiguous=True, record_count=-1, line_offset=0, reco
 def main():
     start_time = time.time()
     # TODO: Train data should be a random sample
-    train_data = fvecs_read(PATH_TO_DATA + 'sift_base.fvecs', record_count=CHUNK_SIZE)
-    num_base_vecs = int(os.stat(PATH_TO_DATA + 'sift_base.fvecs').st_size / (N_DIM + 1) / DATA_SIZE)
+    train_data = fvecs_read(PATH_TO_DATA + 'siftsmall_base.fvecs', record_count=CHUNK_SIZE)
+    num_base_vecs = int(os.stat(PATH_TO_DATA + 'siftsmall_base.fvecs').st_size / (N_DIM + 1) / DATA_SIZE)
 
     print_and_log('{} base vectors'.format(num_base_vecs))
 
@@ -70,7 +70,7 @@ def main():
     centroid_lookup = defaultdict(list)
 
     for i in range(num_base_vecs // CHUNK_SIZE):
-        vectors = fvecs_read(PATH_TO_DATA + 'sift_base.fvecs', record_count=CHUNK_SIZE, line_offset=CHUNK_SIZE * i)
+        vectors = fvecs_read(PATH_TO_DATA + 'siftsmall_base.fvecs', record_count=CHUNK_SIZE, line_offset=CHUNK_SIZE * i)
         for vec in vectors:
             distances = np.linalg.norm(centroids - vec, axis=1)
             closest_centers = distances.argsort()[:N_CLOSEST_CENTERS]
@@ -97,9 +97,7 @@ def main():
     print(medoids_raw)
 
     with open(PATH_TO_DATA + "shards/medoids_index.pickle", "wb") as f:
-        f.dump(medoids_index, f, pickle.HIGHEST_PROTOCOL)
-    f.write(to_write)
-    f.close()
+        pickle.dump(medoids_index, f, pickle.HIGHEST_PROTOCOL)
     
 
     for i, c in enumerate(centroid_lookup):
@@ -110,7 +108,7 @@ def main():
         zero_col = np.full((len(vector_shard), 1), N_DIM, dtype=np.int32)
         vector_shard = np.c_[zero_col, vector_shard]
         print_and_log('Shard shape: {}'.format(vector_shard.shape))
-        vector_shard.tofile(PATH_TO_DATA + 'shards/sift_shard' + str(c + 1) + '.fvecs')
+        vector_shard.tofile(PATH_TO_DATA + 'shards/siftsmall_shard' + str(c + 1) + '.fvecs')
         print_and_log('Shard write time: ' + str(time.time() - shard_start))
     
     print_and_log('Total Time Taken: ' + str(time.time() - start_time))

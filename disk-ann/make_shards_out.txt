@@ -1,4 +1,4 @@
-1000000 base vectors
+10000 base vectors
 KMeans Centroids:
 [[ 2.2928570e+01  5.0714312e+00  7.0714273e+00 ...  6.6071396e+00
    2.0714245e+00  4.2857141e+00]
@@ -14,123 +14,123 @@ KMeans Centroids:
  [ 3.8333332e+01  9.3333349e+00  1.7999983e+00 ...  9.9333305e+00
    2.1066668e+01  5.2133339e+01]]
 Writing shard 0
-Shard shape: (50999, 129)
-Shard write time: 0.11635684967041016
+Shard shape: (609, 129)
+Shard write time: 0.0030183792114257812
 Writing shard 1
-Shard shape: (108894, 129)
-Shard write time: 0.4005241394042969
+Shard shape: (920, 129)
+Shard write time: 0.0035529136657714844
 Writing shard 2
-Shard shape: (10604, 129)
-Shard write time: 0.04605531692504883
+Shard shape: (111, 129)
+Shard write time: 0.0011987686157226562
 Writing shard 3
-Shard shape: (49201, 129)
-Shard write time: 0.14261531829833984
+Shard shape: (524, 129)
+Shard write time: 0.002461671829223633
 Writing shard 4
-Shard shape: (41565, 129)
-Shard write time: 0.12752270698547363
+Shard shape: (386, 129)
+Shard write time: 0.0023508071899414062
 Writing shard 5
-Shard shape: (35649, 129)
-Shard write time: 0.08941531181335449
+Shard shape: (401, 129)
+Shard write time: 0.0021827220916748047
 Writing shard 6
-Shard shape: (98868, 129)
-Shard write time: 0.28992271423339844
+Shard shape: (801, 129)
+Shard write time: 0.0029327869415283203
 Writing shard 7
-Shard shape: (80863, 129)
-Shard write time: 0.21765661239624023
+Shard shape: (921, 129)
+Shard write time: 0.003477811813354492
 Writing shard 8
-Shard shape: (42273, 129)
-Shard write time: 0.13649415969848633
+Shard shape: (505, 129)
+Shard write time: 0.0023505687713623047
 Writing shard 9
-Shard shape: (48445, 129)
-Shard write time: 0.14478468894958496
+Shard shape: (427, 129)
+Shard write time: 0.0021674633026123047
 Writing shard 10
-Shard shape: (35487, 129)
-Shard write time: 0.10706663131713867
+Shard shape: (334, 129)
+Shard write time: 0.001894235610961914
 Writing shard 11
-Shard shape: (47133, 129)
-Shard write time: 0.1271800994873047
+Shard shape: (480, 129)
+Shard write time: 0.0021347999572753906
 Writing shard 12
-Shard shape: (33284, 129)
-Shard write time: 0.0930020809173584
+Shard shape: (276, 129)
+Shard write time: 0.001674652099609375
 Writing shard 13
-Shard shape: (48629, 129)
-Shard write time: 0.1461029052734375
+Shard shape: (458, 129)
+Shard write time: 0.0020236968994140625
 Writing shard 14
-Shard shape: (31338, 129)
-Shard write time: 0.09637975692749023
+Shard shape: (304, 129)
+Shard write time: 0.0017597675323486328
 Writing shard 15
-Shard shape: (50249, 129)
-Shard write time: 0.12711143493652344
+Shard shape: (470, 129)
+Shard write time: 0.0022916793823242188
 Writing shard 16
-Shard shape: (105557, 129)
-Shard write time: 0.2742323875427246
+Shard shape: (1146, 129)
+Shard write time: 0.00388336181640625
 Writing shard 17
-Shard shape: (57357, 129)
-Shard write time: 0.18152856826782227
+Shard shape: (529, 129)
+Shard write time: 0.0025136470794677734
 Writing shard 18
-Shard shape: (63524, 129)
-Shard write time: 0.18400311470031738
+Shard shape: (576, 129)
+Shard write time: 0.002748727798461914
 Writing shard 19
-Shard shape: (43570, 129)
-Shard write time: 0.11607694625854492
+Shard shape: (310, 129)
+Shard write time: 0.0019116401672363281
 Writing shard 20
-Shard shape: (50710, 129)
-Shard write time: 0.13846945762634277
+Shard shape: (611, 129)
+Shard write time: 0.00258636474609375
 Writing shard 21
-Shard shape: (74055, 129)
-Shard write time: 0.2069246768951416
+Shard shape: (654, 129)
+Shard write time: 0.0027010440826416016
 Writing shard 22
-Shard shape: (47957, 129)
-Shard write time: 0.17026257514953613
+Shard shape: (466, 129)
+Shard write time: 0.0019450187683105469
 Writing shard 23
-Shard shape: (71171, 129)
-Shard write time: 0.16855955123901367
+Shard shape: (761, 129)
+Shard write time: 0.0027277469635009766
 Writing shard 24
-Shard shape: (39359, 129)
-Shard write time: 0.11548042297363281
+Shard shape: (392, 129)
+Shard write time: 0.0018854141235351562
 Writing shard 25
-Shard shape: (53067, 129)
-Shard write time: 0.15702199935913086
+Shard shape: (616, 129)
+Shard write time: 0.0023937225341796875
 Writing shard 26
-Shard shape: (38578, 129)
-Shard write time: 0.11468696594238281
+Shard shape: (387, 129)
+Shard write time: 0.0017845630645751953
 Writing shard 27
-Shard shape: (33917, 129)
-Shard write time: 0.10637164115905762
+Shard shape: (357, 129)
+Shard write time: 0.0017628669738769531
 Writing shard 28
-Shard shape: (47424, 129)
-Shard write time: 0.1367645263671875
+Shard shape: (419, 129)
+Shard write time: 0.00185394287109375
 Writing shard 29
-Shard shape: (61965, 129)
-Shard write time: 0.17685723304748535
+Shard shape: (708, 129)
+Shard write time: 0.0027315616607666016
 Writing shard 30
-Shard shape: (55228, 129)
-Shard write time: 0.176300048828125
+Shard shape: (522, 129)
+Shard write time: 0.0023577213287353516
 Writing shard 31
-Shard shape: (44213, 129)
-Shard write time: 0.10679149627685547
+Shard shape: (503, 129)
+Shard write time: 0.002458810806274414
 Writing shard 32
-Shard shape: (16475, 129)
-Shard write time: 0.07209944725036621
+Shard shape: (181, 129)
+Shard write time: 0.0015819072723388672
 Writing shard 33
-Shard shape: (46230, 129)
-Shard write time: 0.14650487899780273
+Shard shape: (510, 129)
+Shard write time: 0.002561807632446289
 Writing shard 34
-Shard shape: (50044, 129)
-Shard write time: 0.1480417251586914
+Shard shape: (482, 129)
+Shard write time: 0.002275228500366211
 Writing shard 35
-Shard shape: (46478, 129)
-Shard write time: 0.12923789024353027
+Shard shape: (531, 129)
+Shard write time: 0.002722024917602539
 Writing shard 36
-Shard shape: (49754, 129)
-Shard write time: 0.1300678253173828
+Shard shape: (510, 129)
+Shard write time: 0.0026433467864990234
 Writing shard 37
-Shard shape: (43342, 129)
-Shard write time: 0.11641931533813477
+Shard shape: (392, 129)
+Shard write time: 0.002096891403198242
 Writing shard 38
-Shard shape: (17746, 129)
-Shard write time: 0.07048869132995605
+Shard shape: (202, 129)
+Shard write time: 0.00168609619140625
 Writing shard 39
-Shard shape: (28798, 129)
-Shard write time: 0.08973407745361328
-Total Time Taken: 25.51117181777954
+Shard shape: (308, 129)
+Shard write time: 0.001917123794555664
+Total Time Taken: 0.8099720478057861
